@@ -3,10 +3,11 @@ import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
 import Stripe from "stripe";
+import { NextAuthOptions } from "next-auth";
 
 const prisma = new PrismaClient();
 
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
@@ -35,4 +36,6 @@ export default NextAuth({
     }
   },
 },
-});
+};
+
+export default NextAuth(authOptions);
