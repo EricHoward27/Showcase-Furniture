@@ -16,12 +16,15 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  // fetch the user
+  const session = await getServerSession(authOptions);
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <Nav />
-        {children}
-      
+      <body className='bg-gray-100 text-gray-800 min-h-screen'>
+        <Nav user={session?.user} expires={session?.expires as string}/>
+        <div className='container mx-auto px-4 py-6'>
+          {children}
+        </div>
       </body>
     </html>
   )
