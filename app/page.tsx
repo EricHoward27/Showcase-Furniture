@@ -30,7 +30,7 @@ export default async function Home() {
   const products = await getProducts();
   console.log(products);
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="grid grid-cols-fluid gap-12">
       {products.map((product) => (
         <Product {...product} key={product.id}/>
       ))}
