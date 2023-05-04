@@ -3,6 +3,10 @@ const nextConfig = {
   experimental: {
     appDir: true,
   },
+  publicRuntimeConfig: {
+    // Will be available on both server and client
+    staticFolder: '/static',
+  },
   images: {
     remotePatterns: [
       {
@@ -12,7 +16,7 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'files.stripe.com',
-      }
+      },
     ],
   },
 }

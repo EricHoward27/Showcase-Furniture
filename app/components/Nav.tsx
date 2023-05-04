@@ -1,8 +1,9 @@
 "use client";
-
+import Link from "next/link";
 import { Session } from "next-auth";
 import { signIn, signOut } from "next-auth/react";
 import Image from "next/image";
+import showcaseLogo from "../../public/images/showcase_logo.png";
 
 // create a Nav component
 const Nav = ({ user }: Session) => {
@@ -10,7 +11,10 @@ const Nav = ({ user }: Session) => {
         <nav className="flex justify-between items-center py-7">
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center py-6">
-                    <h1 className="text-xl font-semibold text-gray-700">Hello Nav!</h1>
+                    {/* Image logo */}
+                    <Link href="/">
+                    <Image src={showcaseLogo} alt="Logo" width={200} height={50} />
+                    </Link>
                     <ul className="flex items-center space-x-6">
                     {/* if user is not log in */} 
                     {!user && (
