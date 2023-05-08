@@ -20,8 +20,8 @@ const Nav = ({ user }: Session) => {
                     <Image src={showcaseLogo} alt="Logo" width={200} height={50} />
                     </Link>
                     <ul className="flex items-center space-x-6">
-                    { /*cart icon */}
-                    <li className=" flex items-center text-3xl relative cursor-pointer">
+                    { /*cart icon & toggle the cart */}
+                    <li onClick={() => cartStore.toggleCart()} className=" flex items-center text-3xl relative cursor-pointer">
                         <CgShoppingCart />
                         <span className="bg-teal-700 text-white text-sm font-bold w-5 h-5 rounded-full absolute left-4 bottom-4 flex items-center justify-center ">
                             {cartStore.cart.length}

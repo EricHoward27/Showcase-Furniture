@@ -1,16 +1,19 @@
 import Image from "next/image";
 import formatPrice from "@/util/PriceFormat";
+import AddCart from "./AddCart";
 // interface for product page props (params and searchParams) data retrieval from the query string
 interface ProductPageProps {
     params: {
         id: string;
     },
     searchParams: {
+        id: string;
         name: string;
         image: string;
-        unit_amount: number | null;
-        description: string | null;
+        unit_amount: number;
+        description: string ;
         features: string;
+        quantity: number | 1;
     }
 }
 
@@ -25,7 +28,7 @@ export default async function Product({ searchParams }: ProductPageProps) {
         <div className="flex gap-2">
             <p className="font-bold text-teal-700 ">{searchParams.unit_amount && formatPrice(searchParams.unit_amount)}</p>
         </div>
-        <button className="my-12 text-white py-2 px-6 font-medium rounded-md bg-teal-700">Add to cart</button>
+        <AddCart {...searchParams} />
         </div>
     </div>
 
