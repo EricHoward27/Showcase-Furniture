@@ -4,9 +4,13 @@ import { Session } from "next-auth";
 import { signIn, signOut } from "next-auth/react";
 import Image from "next/image";
 import showcaseLogo from "../../public/images/showcase_logo.png";
+import Cart from "./Cart";
+import { useCartStore } from "@/store";
+import {CgShoppingCart} from "react-icons/cg";
 
 // create a Nav component
 const Nav = ({ user }: Session) => {
+    const cartStore = useCartStore();
     return ( 
         <nav className="flex justify-between items-center py-7">
             <div className="container mx-auto px-4">
@@ -16,6 +20,13 @@ const Nav = ({ user }: Session) => {
                     <Image src={showcaseLogo} alt="Logo" width={200} height={50} />
                     </Link>
                     <ul className="flex items-center space-x-6">
+                    { /*cart icon */}
+                    <li className=" flex items-center text-3xl relative cursor-pointer">
+                        <CgShoppingCart />
+                        <span className="bg-teal-700 text-white text-sm font-bold w-5 h-5 rounded-full absolute left-4 bottom-4 flex items-center justify-center ">
+                            {cartStore.cart.length}
+                        </span>
+                    </li>
                     {/* if user is not log in */} 
                     {!user && (
                     <li>
@@ -31,8 +42,8 @@ const Nav = ({ user }: Session) => {
                         {/* user profile image; when click drop down for sign out */}
                         <Image src={user?.image as string} 
                         alt={user.name as string} 
-                        width={48}
-                        height={48}
+                        width={36}
+                        height={36}
                         className={"rounded-full"}
                         />
                     </li>
@@ -40,6 +51,7 @@ const Nav = ({ user }: Session) => {
                 </ul>
                 </div>
             </div>
+            {cartStore.isOpen && <Cart />}
         </nav>
      );
 }
