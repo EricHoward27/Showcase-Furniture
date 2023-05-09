@@ -6,7 +6,7 @@ interface ProductProps {
     id: string,
     name: string;
     unit_amount: number | null;
-    image: string;
+    image?: string;
     description: string | null;
     metadata: {
         features: string;
