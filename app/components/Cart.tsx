@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useCartStore } from "@/store";
 import formatPrice from "@/util/PriceFormat";
 import {IoAddCircleOutline, IoRemoveCircle} from "react-icons/io5";
+import {IoIosCloseCircleOutline} from "react-icons/io";
 import basket from "../../public/images/shopping-basket.png";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -14,6 +15,7 @@ const Cart = () => {
         return acc + item.unit_amount! * item.quantity!
     }, 0 );
     return (
+        // Overlay
         <motion.div 
         initial={{opacity: 0}}
         animate={{opacity: 1}}
@@ -24,8 +26,11 @@ const Cart = () => {
             <motion.div 
             layout
             onClick={(e) => e.stopPropagation()} 
-            className="bg-white absolute right-0 top-0 w-1/4 h-screen p-12 overflow-y-scroll text-gray-700">
+            className="bg-white absolute right-0 top-0  h-screen p-12 overflow-y-scroll text-gray-700 w-full lg:w-2/5">
                 <h1>Cart</h1>
+                {/* Close btn */}
+                <button onClick={() => cartStore.toggleCart()} className="absolute right-0 top-0 mt-4 mr-4"><IoIosCloseCircleOutline className="text-2xl" /></button>
+                {/* Map through cart and render products */}
                 {cartStore.cart.map((item) => (
                     <motion.div 
                     layout
