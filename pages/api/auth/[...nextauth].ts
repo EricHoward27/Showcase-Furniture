@@ -25,8 +25,8 @@ export const authOptions: NextAuthOptions = {
       //Lets create a customer in stripe
       if(user.name && user.email) {
       const customer = await stripe.customers.create({
-        email: user.email,
-        name: user.name,
+        email: user.email || undefined,
+        name: user.name || undefined,
       });
    
       //update the user in the database with the stripeId
@@ -37,6 +37,13 @@ export const authOptions: NextAuthOptions = {
     }
   },
 },
+//create a session to store the user id
+callbacks: {
+  async session({ session, token, user }) {
+    session.user = user;
+    return session;
+  }
+}
 };
 
 export default NextAuth(authOptions);

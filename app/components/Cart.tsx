@@ -6,6 +6,7 @@ import {IoAddCircleOutline, IoRemoveCircle} from "react-icons/io5";
 import {IoIosCloseCircleOutline} from "react-icons/io";
 import basket from "../../public/images/shopping-basket.png";
 import { motion, AnimatePresence } from "framer-motion";
+import Checkout from "./Checkout";
 
 const Cart = () => {
     const cartStore = useCartStore();
@@ -29,7 +30,10 @@ const Cart = () => {
             className="bg-white absolute right-0 top-0  h-screen p-12 overflow-y-scroll text-gray-700 w-full lg:w-2/5">
                 <h1>Cart</h1>
                 {/* Close btn */}
-                <button onClick={() => cartStore.toggleCart()} className="absolute right-0 top-0 mt-4 mr-4"><IoIosCloseCircleOutline className="text-2xl" /></button>
+                <button onClick={() => cartStore.toggleCart()} className="absolute right-0 top-0 mt-4 mr-4"><IoIosCloseCircleOutline className="text-2xl" />Back</button>
+                {/**Cart Items */}
+                {cartStore.onCheckout === "cart" && (
+                 <>
                 {/* Map through cart and render products */}
                 {cartStore.cart.map((item) => (
                     <motion.div 
@@ -64,6 +68,8 @@ const Cart = () => {
                         </div>
                     </motion.div>
                 ))}
+                </>
+                )}
                 {/* Total Price and check logic if cart empty total price dont render */}
                 {cartStore.cart.length > 0 && (
                     <p>Total: {formatPrice(totalPrice)}</p>
@@ -71,9 +77,15 @@ const Cart = () => {
                 {/** if cart is empty btn will not rendered */}
                 <motion.div layout>
                 {cartStore.cart.length > 0 && (
-                   <button className="py-2 mt-4 bg-teal-700 w-full rounded-md text-white">Checkout</button>     
+                   <button 
+                   onClick={() => cartStore.setCheckout("checkout") }
+                   className="py-2 mt-4 bg-teal-700 w-full rounded-md text-white">
+                    Checkout
+                    </button>
                 )}
                 </motion.div>
+                 {/* Checkout Form*/}
+                 {cartStore.onCheckout === "checkout" && <Checkout />}
                 {/* if cart is empty show this; add animation for page when cart empty */}
                 <AnimatePresence>
                 {!cartStore.cart.length && (

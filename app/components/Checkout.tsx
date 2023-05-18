@@ -3,6 +3,7 @@ import { loadStripe, StripeElementsOptions } from "@stripe/stripe-js";
 import { CardElement, Elements, ElementsConsumer } from "@stripe/react-stripe-js";
 import { useCartStore } from "@/store";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 // Load Stripe.js and the required React bindings
 const stripePromise = loadStripe(
@@ -11,6 +12,7 @@ const stripePromise = loadStripe(
 // Set up Stripe.js and the Elements provider
 const Checkout = () => {
    const cartStore = useCartStore();
+   const router = useRouter();
    const [clientSecret, setClientSecret] = useState("");
 
    useEffect(() => {
@@ -24,9 +26,14 @@ const Checkout = () => {
                 payment_intent_id: cartStore.paymentIntent,
             }),
         }) .then((res) => {
-            console.log(res)
-            // Set the client secret and the paymnent intent associated with it
+            // Handle server response if status is 403 redirect to signin page
+            if (res.status === 403) {
+                return router.push("/api/auth/signin");
+            } 
+           return res.json();
     
+        }).then((data) => {
+            console.log(data)
         })
     } catch (error) {
         console.log(error)
@@ -37,6 +44,12 @@ const Checkout = () => {
   
 
    }, [])
+
+    return (
+        <div>
+            <h1>Checkout</h1>
+        </div>
+    )
 }
 
  
