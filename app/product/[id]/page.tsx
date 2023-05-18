@@ -19,7 +19,7 @@ interface ProductPageProps {
 
 export default async function Product({ searchParams }: ProductPageProps) {
     return(
-        <div className="flex justify-between gap-24 p-12 text-gray-700">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-24 text-gray-700">
             <Image src={searchParams.image} alt={searchParams.name} width={800} height={800} className='w-80 h-80 object-fill rounded-lg' />
         <div className="font-medium text-gray-700">
             <h1 className="text-2xl font-medium py-2">{searchParams.name}</h1>
