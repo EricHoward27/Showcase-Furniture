@@ -7,14 +7,14 @@ import {IoIosCloseCircleOutline} from "react-icons/io";
 import basket from "../../public/images/shopping-basket.png";
 import { motion, AnimatePresence } from "framer-motion";
 import Checkout from "./Checkout";
+import TotalPrice from "@/util/TotalPrice";
 
 const Cart = () => {
     const cartStore = useCartStore();
     
     // Total Price
-    const totalPrice = cartStore.cart.reduce((acc, item) => {
-        return acc + item.unit_amount! * item.quantity!
-    }, 0 );
+    const totalPrice = TotalPrice();
+
     return (
         // Overlay
         <motion.div 
@@ -30,7 +30,21 @@ const Cart = () => {
             className="bg-white absolute right-0 top-0  h-screen p-12 overflow-y-scroll text-gray-700 w-full lg:w-2/5">
                 <h1>Cart</h1>
                 {/* Close btn */}
-                <button onClick={() => cartStore.toggleCart()} className="absolute right-0 top-0 mt-4 mr-4"><IoIosCloseCircleOutline className="text-2xl" />Back</button>
+                {cartStore.onCheckout === "cart" && (
+                    <button 
+                    onClick={() => cartStore.toggleCart()} 
+                    className="absolute right-0 top-0 mt-4 mr-4"><IoIosCloseCircleOutline className="text-2xl" />
+                        Back to Store
+                    </button>
+                )}
+                {cartStore.onCheckout === "checkout" && (
+                    <button 
+                    onClick={() => cartStore.setCheckout("cart")} 
+                    className="absolute right-0 top-0 mt-4 mr-4"><IoIosCloseCircleOutline className="text-2xl" />
+                        Back to Cart
+                    </button>
+                )}
+             
                 {/**Cart Items */}
                 {cartStore.onCheckout === "cart" && (
                  <>

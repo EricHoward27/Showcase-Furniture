@@ -2,11 +2,10 @@ import Stripe from "stripe";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/util/prisma";
 
 interface CreatePaymentIntentProps {
   name: string;
-  id: string;
   image?: string;
   unit_amount: number;
   description?: string;
@@ -16,8 +15,6 @@ interface CreatePaymentIntentProps {
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2022-11-15",
 });
-
-const prisma = new PrismaClient();
 
 // Calculate the order total on the server
 const calculateOrderAmount = (items: CreatePaymentIntentProps[]) => {
@@ -35,17 +32,20 @@ export default async function handler(
   res: NextApiResponse
 ) {
   try {
+    // Get the User's session
     const userSession = await getServerSession(req, res, authOptions);
-    if (!userSession) {
+    if (!userSession?.user) {
       res.status(403).json({ error: "Not logged in" });
       return;
     }
-
+    // Extract the data we need from the request body
     const { items, payment_intent_id } = req.body;
-
+    const total = calculateOrderAmount(items);
+    
+    // Create the order data
     const orderData = {
       user: { connect: { id: userSession.user?.id } },
-      amount: calculateOrderAmount(items),
+      amount: total,
       currency: "usd",
       status: "pending",
       paymentIntentId: payment_intent_id,
@@ -62,7 +62,16 @@ export default async function handler(
 
     if (payment_intent_id) {
       // Code for updating order with existing payment intent
-      // ...
+      // check if payment intent exists just update the order
+      const current_intent = await stripe.paymentIntents.retrieve(
+        payment_intent_id
+      )
+      if (current_intent) {
+        const updated_intent = await stripe.paymentIntents.update(
+          payment_intent_id,
+          { amount: total }
+        )
+      }
     } else {
       const paymentIntent = await stripe.paymentIntents.create({
         amount: calculateOrderAmount(items),

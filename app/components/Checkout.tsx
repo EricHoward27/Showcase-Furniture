@@ -4,6 +4,7 @@ import { CardElement, Elements, ElementsConsumer } from "@stripe/react-stripe-js
 import { useCartStore } from "@/store";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import CheckoutForm from "./CheckoutForm";
 
 // Load Stripe.js and the required React bindings
 const stripePromise = loadStripe(
@@ -16,6 +17,7 @@ const Checkout = () => {
    const [clientSecret, setClientSecret] = useState("");
 
    useEffect(() => {
+    const createPaymentIntent = async () => {
     try {
          // Create PaymentIntent as soon as the page loads use try catch to catch errors
         fetch("/api/create-payment-intent", {
@@ -31,7 +33,7 @@ const Checkout = () => {
                 return router.push("/api/auth/signin");
             } 
            return res.json();
-    
+            // use client secret to confirm payment and complete transaction
         }).then((data) => {
             setClientSecret(data.paymentIntent.client_secret)
             cartStore.setPaymentIntent(data.paymentIntent.id)
@@ -41,14 +43,28 @@ const Checkout = () => {
         alert(error)
         
     }
-   
+};
+createPaymentIntent();
   
+}, [cartStore, router]);
 
-   }, [])
+const options: StripeElementsOptions ={
+    clientSecret,
+    appearance: {
+        theme: "stripe",
+        labels: "floating",
+    },
 
+}
     return (
         <div>
-            <h1>Checkout</h1>
+            {clientSecret && (
+                <div>
+                    <Elements options={options} stripe={stripePromise}>
+                       <CheckoutForm clientSecret={clientSecret} />
+                    </Elements>
+                </div>
+            )}
         </div>
     )
 }

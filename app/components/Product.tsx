@@ -5,7 +5,7 @@ import Link from 'next/link';
 interface ProductProps {
     id: string,
     name: string;
-    unit_amount: number;
+    unit_amount: number | null;
     image?: string;
     description: string | null;
     metadata: {
