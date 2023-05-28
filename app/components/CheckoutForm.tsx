@@ -1,6 +1,6 @@
 "use client"
 import {useState, useEffect} from "react";
-import { PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { PaymentElement, useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import formatPrice from "@/util/PriceFormat";
 import TotalPrice from "@/util/TotalPrice";
 import { StripeCardElement } from "@stripe/stripe-js";
@@ -28,35 +28,49 @@ const CheckoutForm = ({clientSecret}: {clientSecret: string}) => {
         setIsLoading(true);
 
         try {
-        // Use the stripe.confirmCardPayment() method to submit the payment details to Stripe.
-        const result = await stripe?.confirmCardPayment(clientSecret, {
-            payment_method: {
-                card: elements?.getElement(PaymentElement) as StripeCardElement,
-            },
-        });
-          if(result?.error){
-            // Handle Payment Errors
-            console.log(result.error.message);
-            alert(result.error.message);
-          }  else {
-            // Payment Success
+            // if no stripe or elements throw error
+            if (!stripe || !elements) {
+                throw new Error("Stripe or Elements not available.");
+              }
+            // get the card element
+            const cardElement = elements?.getElement(PaymentElement) as StripeCardElement;
+            if (!cardElement) {
+                throw new Error("Card Element not found.");
+                }
+            // Use your card Element with other Stripe.js APIs
+            const paymentMethod = await stripe.createPaymentMethod({
+                    type: "card",
+                    card: cardElement,
+            });
+            // if payment method error throw error
+            if (paymentMethod.error) {
+                throw new Error(paymentMethod.error.message);
+              }
+            // Use the stripe.confirmCardPayment() method to submit the payment details to Stripe.
+            const confirmPaymentIntent = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: paymentMethod.paymentMethod?.id,
+              });
+            // if confirm payment intent error throw error
+            if (confirmPaymentIntent.error) {
+                throw new Error(confirmPaymentIntent.error.message);
+              }
+          // Payment success
             console.log("Payment Approved");
-            // Redirect to the success page or perform some other action
-            cartStore.setCheckout("success")
-          }
+            cartStore.setCheckout("success");
         } catch (error) {
             // Handle general errors
             console.log(error);
             alert(error);
         }
         setIsLoading(false);
+        console.log(handleSubmit)
     }
 
     return ( 
-        <form id="payment-form" onSubmit={handleSubmit}>
-            <PaymentElement id="payment-element" options={{layout: "accordion"}}/>
-            <h1>Total: {formattedPrice}</h1>
-            <button id="submit" disabled={isLoading || !stripe || !elements }>
+        <form className="text-gray-600" onSubmit={handleSubmit}>
+            <CardElement id="card-element" options={{ style: { base: { fontSize: "16px" } } }}/>
+            <h1 className="py-4 text-sm font-bold">Total: {formattedPrice}</h1>
+            <button className={`py-2 mt-4 w-full bg-teal-700 rounded-md text-white disabled:opacity-25`} id="submit" disabled={isLoading || !stripe || !elements }>
                 <span id="button-text">
                     {isLoading ? <span>Processing</span> : <span>Pay now</span>}
                 </span>

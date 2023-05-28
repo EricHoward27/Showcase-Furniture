@@ -85,19 +85,18 @@ const Cart = () => {
                 </>
                 )}
                 {/* Total Price and check logic if cart empty total price dont render */}
-                {cartStore.cart.length > 0 && (
-                    <p>Total: {formatPrice(totalPrice)}</p>
-                )}
-                {/** if cart is empty btn will not rendered */}
+                {cartStore.cart.length > 0 && cartStore.onCheckout === "cart" ?  (
                 <motion.div layout>
-                {cartStore.cart.length > 0 && (
-                   <button 
+                <p>Total: {formatPrice(totalPrice)}</p>
+                {/** if cart is empty btn will not rendered */}
+                <button 
                    onClick={() => cartStore.setCheckout("checkout") }
                    className="py-2 mt-4 bg-teal-700 w-full rounded-md text-white">
                     Checkout
-                    </button>
-                )}
+                </button>
                 </motion.div>
+                ) : null}
+                
                  {/* Checkout Form*/}
                  {cartStore.onCheckout === "checkout" && <Checkout />}
                 {/* if cart is empty show this; add animation for page when cart empty */}

@@ -36,7 +36,12 @@ export default async function RootLayout({
     <html lang="en">
       <body className={`bg-gray-100 text-gray-800 min-h-screen mx-4 lg:mx-48 ${roboto.className}`}>
         <Hydrate>
-        <Nav user={session?.user} expires={session?.expires as string}/>
+          {session ? (
+            <Nav user={session.user} expires={session.expires as string}/>
+          ): (
+            // Render a loading state or alternative content
+            <div className="flex justify-between items-center py-4">Loading...</div>
+          )}
         <div className='container mx-auto px-4 py-6'>
           {children}
         </div>

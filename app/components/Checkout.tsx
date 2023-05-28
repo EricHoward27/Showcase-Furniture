@@ -1,4 +1,3 @@
-"use client"
 import { loadStripe, StripeElementsOptions } from "@stripe/stripe-js";
 import { CardElement, Elements, ElementsConsumer } from "@stripe/react-stripe-js";
 import { useCartStore } from "@/store";
@@ -6,68 +5,66 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import CheckoutForm from "./CheckoutForm";
 
-// Load Stripe.js and the required React bindings
+// Load Stripe
 const stripePromise = loadStripe(
-    process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-
-// Set up Stripe.js and the Elements provider
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
+// Checkout component
 const Checkout = () => {
-   const cartStore = useCartStore();
-   const router = useRouter();
-   const [clientSecret, setClientSecret] = useState("");
+// Define the client secret state, and set it to an empty string.
+  const cartStore = useCartStore();
+  const router = useRouter();
+  const [clientSecret, setClientSecret] = useState("");
 
-   useEffect(() => {
+  useEffect(() => {
+    // Define a function to call the create-payment-intent API endpoint.
     const createPaymentIntent = async () => {
-    try {
-         // Create PaymentIntent as soon as the page loads use try catch to catch errors
-        fetch("/api/create-payment-intent", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({
-                items: cartStore.cart,
-                payment_intent_id: cartStore.paymentIntent,
-            }),
-        }) .then((res) => {
-            // Handle server response if status is 403 redirect to signin page
-            if (res.status === 403) {
-                return router.push("/api/auth/signin");
-            } 
-           return res.json();
-            // use client secret to confirm payment and complete transaction
-        }).then((data) => {
-            setClientSecret(data.paymentIntent.client_secret)
-            cartStore.setPaymentIntent(data.paymentIntent.id)
-        })
-    } catch (error) {
-        console.log(error)
-        alert(error)
-        
-    }
-};
-createPaymentIntent();
-  
-}, [cartStore, router]);
-
-const options: StripeElementsOptions ={
+      try {
+        const response = await fetch("/api/create-payment-intent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            items: cartStore.cart,
+            payment_intent_id: cartStore.paymentIntent,
+          }),
+        });
+        // If the response status is 403, redirect the user to the sign-in page.
+        if (response.status === 403) {
+          return router.push("/api/auth/signin");
+        }
+        const data = await response.json();
+        setClientSecret(data.paymentIntent.client_secret);
+        cartStore.setPaymentIntent(data.paymentIntent.id);
+        // If the response status is 500, throw an error.
+      } catch (error) {
+        console.log(error);
+        alert("Error occurred while creating payment intent.");
+      }
+    };
+    // Call the createPaymentIntent function.
+    createPaymentIntent();
+  }, [cartStore, router]);
+  // Define the options for the Elements component.
+  const options: StripeElementsOptions = {
     clientSecret,
     appearance: {
-        theme: "stripe",
-        labels: "floating",
+      theme: "stripe",
+      labels: "floating",
     },
+  };
 
-}
-    return (
+  return (
+    // If the client secret is defined, render the Elements component.
+    <div>
+      {clientSecret && (
         <div>
-            {clientSecret && (
-                <div>
-                    <Elements options={options} stripe={stripePromise}>
-                       <CheckoutForm clientSecret={clientSecret} />
-                    </Elements>
-                </div>
-            )}
+          <Elements options={options} stripe={stripePromise}>
+            <CheckoutForm clientSecret={clientSecret} />
+          </Elements>
         </div>
-    )
-}
+      )}
+    </div>
+  );
+};
 
- 
 export default Checkout;

@@ -1,4 +1,3 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
     appDir: true,
@@ -6,6 +5,10 @@ const nextConfig = {
   publicRuntimeConfig: {
     // Will be available on both server and client
     staticFolder: '/static',
+    // Add your Stripe publishable key here
+    stripe: {
+      publishableKey:  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    },
   },
   images: {
     remotePatterns: [
@@ -21,4 +24,4 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+module.exports = nextConfig;
