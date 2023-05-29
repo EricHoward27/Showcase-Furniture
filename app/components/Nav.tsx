@@ -18,7 +18,7 @@ const Nav = ({ user }: Session) => {
                 <div className="flex justify-between items-center py-6">
                     {/* Image logo */}
                     <Link href="/">
-                    <Image src={showcaseLogo} alt="Logo" width={200} height={50} />
+                    <Image src={showcaseLogo} alt="Logo" width={200} height={50} className="w-auto h-auto" priority={true}/>
                     </Link>
                     <ul className="flex items-center space-x-6">
                     { /*cart icon & toggle the cart */}
